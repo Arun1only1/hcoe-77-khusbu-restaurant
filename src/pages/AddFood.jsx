@@ -3,16 +3,26 @@ import {
   Button,
   FormControl,
   FormHelperText,
-  Stack,
   TextField,
   Typography,
 } from '@mui/material';
 import { Formik } from 'formik';
 import React from 'react';
-import { Link } from 'react-router-dom';
 import * as Yup from 'yup';
+import axiosInstance from '../lib/axios.instance';
+import { useNavigate } from 'react-router-dom';
 
 const AddFood = () => {
+  const navigate = useNavigate();
+
+  const addFood = async (values) => {
+    try {
+      const res = await axiosInstance.post('/food/add', values);
+      navigate('/');
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <Box>
       <Formik
@@ -37,11 +47,11 @@ const AddFood = () => {
           description: Yup.string()
             .required('Description is required.')
             .trim()
-            .min(10, 'Description must be at least 10 characters.')
+            .min(200, 'Description must be at least 200 characters.')
             .max(1000, 'Description must be at max 1000 characters.'),
         })}
         onSubmit={(values) => {
-          console.log(values);
+          addFood(values);
         }}
       >
         {(formik) => {
@@ -99,6 +109,7 @@ const AddFood = () => {
                 <TextField
                   multiline
                   minRows={6}
+                  maxRows={10}
                   label='Description'
                   {...formik.getFieldProps('description')}
                 />

@@ -1,13 +1,42 @@
 import EditIcon from '@mui/icons-material/Edit';
-import { Box, Button, Stack, Typography } from '@mui/material';
-import React from 'react';
-import { useParams } from 'react-router-dom';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Stack,
+  Typography,
+} from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import axiosInstance from '../lib/axios.instance';
+import DeleteProductDialog from '../components/DeleteProductDialog';
 
 const ProductDetail = () => {
   const params = useParams();
-  console.log(params);
+  const navigate = useNavigate();
 
+  const [loading, setLoading] = useState(false);
+  const [foodDetail, setFoodDetail] = useState({});
+  useEffect(() => {
+    const getProductDetails = async () => {
+      try {
+        setLoading(true);
+        const res = await axiosInstance.get(`/food/detail/${params.id}`);
+        setLoading(false);
+        setFoodDetail(res?.data?.foodDetail);
+        console.log(res);
+      } catch (error) {
+        setLoading(false);
+        console.log(error);
+      }
+    };
+
+    getProductDetails();
+  }, []);
+
+  if (loading) {
+    return <CircularProgress />;
+  }
   return (
     <Box
       sx={{
@@ -23,7 +52,10 @@ const ProductDetail = () => {
     >
       <Box sx={{ width: '50%' }}>
         <img
-          src='https://imgs.search.brave.com/BMdtJX_vykHh3jStjH4lS28vWzL5tXKAT0aZ7fcWAp0/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9ncmVh/dGN1cnJ5cmVjaXBl/cy5uZXQvd3AtY29u/dGVudC91cGxvYWRz/LzIwMjMvMTEvY2hp/Y2tlbm1vbW9zNC5q/cGcud2VicA'
+          src={
+            foodDetail?.image ||
+            'https://imgs.search.brave.com/6iInfQJbL7Mu73vJg5kN520wjLKO3kBUbZh_sn17d5A/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzA3Lzg1LzUzLzI3/LzM2MF9GXzc4NTUz/Mjc4MV9DRjdKNUd3/Njd5SWd2QjBNRmJX/NVFPeXplanNMVjZm/eC5qcGc'
+          }
           alt=''
           height='500px'
           width='100%'
@@ -36,21 +68,17 @@ const ProductDetail = () => {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
+          // gap: '1rem',
           // alignItems: 'space-between',
           // height: '100%',
         }}
       >
-        <Typography variant='h5'>Nepali Authentic Chicken Momo</Typography>
+        <Typography variant='h5'>{foodDetail?.name}</Typography>
 
-        <Typography>Rs.250</Typography>
-        <Typography>Serving size: 1 plate/10 momos</Typography>
+        <Typography>Rs.{foodDetail?.price}</Typography>
+        <Typography>Serving size: {foodDetail?.servingSize}</Typography>
         <Typography sx={{ textAlign: 'justify' }}>
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sunt nisi
-          aspernatur vitae nulla commodi voluptatibus placeat quia! Omnis error,
-          voluptates consequuntur, placeat veritatis voluptatibus accusantium
-          ratione esse architecto hic nisi libero ea, quas soluta! Ab, rem!
-          Soluta magni distinctio, repudiandae libero, dicta iusto quis odio
-          velit enim nisi, modi quae.
+          {foodDetail?.description}
         </Typography>
 
         <Stack direction='row' spacing={2}>
@@ -59,17 +87,13 @@ const ProductDetail = () => {
             color='success'
             fullWidth
             startIcon={<EditIcon />}
+            onClick={() => {
+              navigate(`/edit-food/${params.id}`);
+            }}
           >
             Edit
           </Button>
-          <Button
-            variant='contained'
-            color='error'
-            fullWidth
-            startIcon={<DeleteOutlineIcon />}
-          >
-            Delete
-          </Button>
+          <DeleteProductDialog />
         </Stack>
       </Box>
     </Box>

@@ -7,26 +7,31 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
 
-const FoodCard = () => {
+const FoodCard = (props) => {
   const navigate = useNavigate();
   return (
     <Card sx={{ width: '350px' }}>
       <CardMedia
         onClick={() => {
-          navigate('/product-detail/123');
+          navigate(`/product-detail/${props._id}`);
         }}
-        sx={{ height: 200, cursor: 'pointer' }}
-        image='https://imgs.search.brave.com/v1X0H6myR_gy1fQXl81Nke3Y9ECyF3NahDtoxdDgZeE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/aGFyaWdob3RyYS5j/by51ay9pbWFnZXMv/cmVjaXBlcy9oZXJv/L21vbW9faGVyby5w/bmc'
-        title='chicken momo'
+        sx={{ height: '250px', cursor: 'pointer', objectFit: 'cover' }}
+        image={
+          props.imageUrl ||
+          'https://imgs.search.brave.com/6iInfQJbL7Mu73vJg5kN520wjLKO3kBUbZh_sn17d5A/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzA3Lzg1LzUzLzI3/LzM2MF9GXzc4NTUz/Mjc4MV9DRjdKNUd3/Njd5SWd2QjBNRmJX/NVFPeXplanNMVjZm/eC5qcGc'
+        }
+        title={props.name}
       />
       <CardContent>
         <Typography gutterBottom variant='h5' component='div'>
-          Chicken Momo
+          {props.name}
         </Typography>
-        <Typography variant='body2' color='text.secondary'>
-          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Velit
-          molestiae similique voluptate obcaecati qui enim aliquam laboriosam
-          veniam ipsum magnam.
+        <Typography
+          variant='body2'
+          color='text.secondary'
+          sx={{ textAlign: 'justify' }}
+        >
+          {props.description.substring(0, 200)}...
         </Typography>
       </CardContent>
       <CardActions>
@@ -35,7 +40,7 @@ const FoodCard = () => {
           variant='contained'
           color='success'
           onClick={() => {
-            navigate('/product-detail/123');
+            navigate(`/product-detail/${props?._id}`);
           }}
         >
           Explore

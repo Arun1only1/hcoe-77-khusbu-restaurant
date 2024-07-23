@@ -7,12 +7,24 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Formik, yupToFormErrors } from 'formik';
+import { Formik } from 'formik';
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
+import axiosInstance from '../lib/axios.instance';
 
 const Register = () => {
+  const navigate = useNavigate();
+
+  const registerUser = async (values) => {
+    try {
+      await axiosInstance.post('/admin/register', values);
+      navigate('/login');
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <Box>
       <Formik
@@ -34,7 +46,7 @@ const Register = () => {
           lastName: Yup.string().trim().max(30).required(),
         })}
         onSubmit={(values) => {
-          console.log(values);
+          registerUser(values);
         }}
       >
         {(formik) => {

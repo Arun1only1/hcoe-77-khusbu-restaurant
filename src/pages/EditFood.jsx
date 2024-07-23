@@ -36,7 +36,8 @@ const EditFood = () => {
           description: Yup.string()
             .required('Description is required.')
             .trim()
-            .min(10, 'Description must be at least 10 characters.')
+            .min(200, 'Description must be at least 200 characters.')
+
             .max(1000, 'Description must be at max 1000 characters.'),
         })}
         onSubmit={(values) => {

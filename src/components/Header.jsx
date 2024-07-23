@@ -28,6 +28,11 @@ const Header = (props) => {
     setMobileOpen((prevState) => !prevState);
   };
 
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate('/login');
+  };
+
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
       <Typography variant='h6' sx={{ my: 2 }}>
@@ -47,7 +52,7 @@ const Header = (props) => {
           variant='text'
           sx={{ color: '#000' }}
           onClick={() => {
-            navigate('/login');
+            handleLogout();
           }}
         >
           logout
@@ -90,7 +95,7 @@ const Header = (props) => {
             <Button
               sx={{ color: '#fff' }}
               onClick={() => {
-                navigate('/login');
+                handleLogout();
               }}
             >
               Logout

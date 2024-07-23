@@ -1,13 +1,56 @@
-import { Box, Typography } from '@mui/material';
-import React from 'react';
-import { Link } from 'react-router-dom';
+import { Box, Button, CircularProgress, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
 import FoodCard from '../components/FoodCard';
 import Header from '../components/Header';
+import axiosInstance from '../lib/axios.instance';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [foodList, setFoodList] = useState([]);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const getFoodList = async () => {
+      try {
+        setIsLoading(true);
+        const res = await axiosInstance.get('/food/list');
+        setIsLoading(false);
+        const foods = res?.data?.foodList;
+        setFoodList(foods);
+      } catch (error) {
+        setIsLoading(false);
+        console.log(error);
+      }
+    };
+
+    getFoodList();
+  }, []);
+
+  if (isLoading) {
+    return <CircularProgress />;
+  }
+
   return (
     <>
       <Header />
+
+      <Box sx={{ display: 'flex', gap: '2rem', margin: '5rem 0 2rem' }}>
+        <Button
+          variant='contained'
+          color='success'
+          onClick={() => {
+            navigate('/add-food');
+          }}
+        >
+          add food
+        </Button>
+        <Typography variant='h6'>
+          Welcome , {localStorage.getItem('firstName')}
+        </Typography>
+      </Box>
+
       <Box
         sx={{
           display: 'flex',
@@ -15,19 +58,21 @@ const Home = () => {
           alignItems: 'center',
           gap: '2rem',
           flexWrap: 'wrap',
-          margin: '7rem 0 4rem',
+          marginBottom: '4rem',
         }}
       >
-        <FoodCard />
-        <FoodCard />
-        <FoodCard />
-        <FoodCard />
-        <FoodCard />
-        <FoodCard />
-        <FoodCard />
-        <FoodCard />
-        <FoodCard />
-        <FoodCard />
+        {foodList.map((item, index, self) => {
+          return (
+            <FoodCard
+              key={item._id}
+              _id={item._id}
+              imageUrl={item?.image}
+              name={item.name}
+              price={item.price}
+              description={item.description}
+            />
+          );
+        })}
       </Box>
     </>
   );

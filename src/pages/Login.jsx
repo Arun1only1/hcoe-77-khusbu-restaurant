@@ -3,18 +3,41 @@ import {
   Button,
   FormControl,
   FormHelperText,
+  LinearProgress,
   Stack,
   TextField,
   Typography,
 } from '@mui/material';
 import { Formik } from 'formik';
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
+import axiosInstance from '../lib/axios.instance';
 
 const Login = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
+  const loginUser = async (values) => {
+    try {
+      setLoading(true);
+      const res = await axiosInstance.post('/admin/login', values);
+      const accessToken = res?.data?.accessToken;
+      const firstName = res?.data?.adminDetails?.firstName;
+
+      localStorage.setItem('token', accessToken);
+      localStorage.setItem('firstName', firstName);
+
+      setLoading(false);
+      navigate('/');
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+    }
+  };
   return (
     <Box>
+      {loading && <LinearProgress color='secondary' />}
       <Formik
         initialValues={{
           email: '',
@@ -30,7 +53,7 @@ const Login = () => {
           password: Yup.string().trim().required('Password is required.'),
         })}
         onSubmit={(values) => {
-          console.log(values);
+          loginUser(values);
         }}
       >
         {(formik) => {
